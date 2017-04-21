@@ -47,6 +47,7 @@ $IPTABLES -a INPUT -p icmp --icmp-type echo-request -j ACCEPT
 ## DEFAULT INPUT LOG RULE
 $IPTABLES -A INPUT -i ! lo -j LOG --log-prefix "DROP " --log-ip-options --log-tcp-options
 
+
 #####################################
 ###                               ###
 ###        OUTPUT CHAIN           ###
@@ -72,3 +73,34 @@ $IPTABLES -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
 
 ## DEFAULT OUTPUT LOG RULE
 $IPTABLES -A OUTPUT -o ! lo -j LOG --log-prefix "DROP " --log-ip-options --log-tcp-options
+
+
+#####################################
+###                               ###
+###        FORWARD CHAIN          ###
+###                               ###
+#####################################
+
+echo "[+] Setting up FORWARD chain..."
+## STATE TRACKING RULES
+$IPTABLES -A FORWARD -m state --state INVALID -j LOG --log-prefix "DROP INVALID " --log-ip-options --log-tcp-options
+$IPTABLES -A FORWARD -m state --state INVALID -j DROP
+$IPTABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+## ANTI-SPOOFING RULES
+$IPTABLES -A FORWARD -i eth1 -s ! $INT_NET -j LOG --log-prefix "SPOOFED PKT "
+$IPTABLES -A FORWARD -i eth1 -s ! $INT_NET -j DROP
+
+## ACCEPT RULES
+$IPTABLES -A FORWARD -p tcp --dport 21 --syn -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp --dport 22 --syn -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp --dport 25 --syn -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp --dport 43 --syn -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp -dport 80 --syn -m state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp -dport 443 --syn -m state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p tcp -i eth1 -s $INT_NET --dport 4321 --syn -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p udp --dport 53 -m state --state NEW -j ACCEPT
+$IPTABLES -A FORWARD -p icmp --icmp-type echo-request -j ACCEPT
+
+## DEFAULT FORWARD LOG RULE
+$IPTABLES -A FORWARD -o ! lo -j LOG --log-prefix "DROP " --log-ip-options --log-tcp-options
