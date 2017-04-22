@@ -1,7 +1,7 @@
 #!/bin/sh
 IPTABLES=/sbin/iptables
 MODPROBE=/sbin/modprobe
-INT_NET=192.168.10.0/24
+INT_NET=192.168.1.0/24
 
 #####################################
 ###                               ###
@@ -104,3 +104,26 @@ $IPTABLES -A FORWARD -p icmp --icmp-type echo-request -j ACCEPT
 
 ## DEFAULT FORWARD LOG RULE
 $IPTABLES -A FORWARD -o ! lo -j LOG --log-prefix "DROP " --log-ip-options --log-tcp-options
+
+
+#####################################
+###                               ###
+###  NETWORD ADDRESS TRANSLATION  ###
+###                               ###
+#####################################
+
+echo "[+] Setting up NAT chain..."
+$IPTABLES -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -h DNAT --to [WEB SERVER IP]:80
+$IPTABLES -t nat -A PREROUTING -p tcp --dport 443 -i eth0 -h DNAT --to [WEB SERVER IP]
+$IPTABLES -t nat -A PREROUTING -p tcp --dport 53 -i eth0 -h DNAT --to [DNS SERVER IP]:53
+$IPTABLES -t nat -A POSTROUTING -s $INT_NET -o eth0 -j MASQUERADE
+
+
+#####################################
+###                               ###
+###        FORWARDING             ###
+###                               ###
+#####################################
+
+echo "[+] Enabling IP forwarding..."
+echo 1 > /proc/sys/net/ipv4/ip_forward
