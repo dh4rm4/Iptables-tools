@@ -49,8 +49,8 @@ $IPTABLES -A INPUT -m state --state INVALID -j DROP
 $IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 ## ANTI-SPOOFING RULES
-#$IPTABLES -A INPUT -i eth1 -s ! $INT_NET -j LOG --log-prefix "SPOOFED PKT "
-#$IPTABLES -A INPUT -i eth1 -s ! $INT_NET -j DROP
+$IPTABLES -A INPUT -i eth1 ! -s $INT_NET -j LOG --log-prefix "SPOOFED PKT "
+$IPTABLES -A INPUT -i eth1 ! -s $INT_NET -j DROP
 
 ## ACCEPT RULES
 $IPTABLES -A INPUT -i eth1 -p tcp -s $INT_NET --dport 22 --syn -m state --state NEW -j ACCEPT
@@ -100,8 +100,8 @@ $IPTABLES -A FORWARD -m state --state INVALID -j DROP
 $IPTABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 ## ANTI-SPOOFING RULES
-#$IPTABLES -A FORWARD -i eth1 -s ! $INT_NET -j LOG --log-prefix "SPOOFED PKT "
-#$IPTABLES -A FORWARD -i eth1 -s ! $INT_NET -j DROP
+$IPTABLES -A FORWARD -i eth1 ! -s $INT_NET -j LOG --log-prefix "SPOOFED PKT "
+$IPTABLES -A FORWARD -i eth1 ! -s $INT_NET -j DROP
 
 ## ACCEPT RULES
 $IPTABLES -A FORWARD -p tcp --dport 21 --syn -m state --state NEW -j ACCEPT
