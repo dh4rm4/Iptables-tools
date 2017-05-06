@@ -22,7 +22,7 @@ fi
 #####################################
 
 ## DELETE EXISTING RULES AND SET CHAIN POLICY SETTING TO DROP
-echo -e "[${GRN}+${NC}] Deleting existing iptables rules..."
+echo -e " [${GRN}+${NC}] Deleting existing iptables rules..."
 $IPTABLES -F
 $IPTABLES -F -t nat
 $IPTABLES -X
@@ -30,7 +30,7 @@ $IPTABLES -P INPUT ACCEPT #DROP
 $IPTABLES -P OUTPUT ACCEPT #DROP
 $IPTABLES -P FORWARD ACCEPT #DROP
 
-echo -e "[${GRN}+${NC}] Load connection tracking modules..."
+echo -e " [${GRN}+${NC}] Load connection tracking modules..."
 $MODPROBE ip_conntrack
 $MODPROBE iptable_nat
 $MODPROBE ip_conntrack_ftp
@@ -42,7 +42,7 @@ $MODPROBE ip_nat_ftp
 ###                               ###
 #####################################
 
-echo -e "[${GRN}+${NC}] Setting up INPUT chain..."
+echo -e " [${GRN}+${NC}] Setting up INPUT chain..."
 ## STATE TRACKING RULES
 $IPTABLES -A INPUT -m state --state INVALID -j LOG --log-prefix "DROP INVALID " --log-ip-options --log-tcp-options
 $IPTABLES -A INPUT -m state --state INVALID -j DROP
@@ -66,7 +66,7 @@ $IPTABLES -A INPUT ! -i lo -j LOG --log-prefix "DROP " --log-ip-options --log-tc
 ###                               ###
 #####################################
 
-echo -e "[${GRN}+${NC}] Setting up OUTPUT chain..."
+echo -e " [${GRN}+${NC}] Setting up OUTPUT chain..."
 ## STATE TRACKING RULES
 $IPTABLES -A OUTPUT -m state --state INVALID -j LOG --log-prefix "DROP INVALID " --log-ip-options --log-tcp-options
 $IPTABLES -A OUTPUT -m state --state INVALID -j DROP
@@ -93,7 +93,7 @@ $IPTABLES -A OUTPUT ! -o lo -j LOG --log-prefix "DROP " --log-ip-options --log-t
 ###                               ###
 #####################################
 
-echo -e "[${GRN}+${NC}] Setting up FORWARD chain..."
+echo -e " [${GRN}+${NC}] Setting up FORWARD chain..."
 ## STATE TRACKING RULES
 $IPTABLES -A FORWARD -m state --state INVALID -j LOG --log-prefix "DROP INVALID " --log-ip-options --log-tcp-options
 $IPTABLES -A FORWARD -m state --state INVALID -j DROP
@@ -124,7 +124,7 @@ $IPTABLES -A FORWARD ! -i lo -j LOG --log-prefix "DROP " --log-ip-options --log-
 ###                               ###
 #####################################
 
-#echo -e "[${GRN}+${NC}] Setting up NAT chain..."
+#echo -e " [${GRN}+${NC}] Setting up NAT chain..."
 #$IPTABLES -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -h DNAT --to [WEB SERVER IP]:80
 #$IPTABLES -t nat -A PREROUTING -p tcp --dport 443 -i eth0 -h DNAT --to [WEB SERVER IP]
 #$IPTABLES -t nat -A PREROUTING -p tcp --dport 53 -i eth0 -h DNAT --to [DNS SERVER IP]:53
@@ -137,5 +137,5 @@ $IPTABLES -A FORWARD ! -i lo -j LOG --log-prefix "DROP " --log-ip-options --log-
 ###                               ###
 #####################################
 
-echo -e "[${GRN}+${NC}] Enabling IP forwarding..."
+echo -e " [${GRN}+${NC}] Enabling IP forwarding..."
 echo -e 1 > /proc/sys/net/ipv4/ip_forward
