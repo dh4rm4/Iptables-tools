@@ -151,4 +151,4 @@ echo -e 1 > /proc/sys/net/ipv4/ip_forward
 echo -e " [${GRN}+${NC}] Enabling rules restoration at boot..."
 echo -e " [${GRN}+${NC}] Installing iptables-persistent..."
 apt-get install iptables-persistent -yy 2>&1 1>&/dev/null
-$IPTABLES_SAVE > /etc/iptables/rules
+$IPTABLES_SAVE > /etc/iptables/rules.v4
