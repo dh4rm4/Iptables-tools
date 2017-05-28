@@ -1,6 +1,7 @@
 #!/bin/bash
 
 IPTABLES=/sbin/iptables
+IPTABLES_SAVE=/sbin/iptables-save
 MODPROBE=/sbin/modprobe
 INT_NET=192.168.1.1/24
 
@@ -139,3 +140,14 @@ $IPTABLES -A FORWARD ! -i lo -j LOG --log-prefix "DROP " --log-ip-options --log-
 
 echo -e " [${GRN}+${NC}] Enabling IP forwarding..."
 echo -e 1 > /proc/sys/net/ipv4/ip_forward
+
+
+#####################################
+###                               ###
+###        AUTOMATISATION         ###
+###                               ###
+#####################################
+
+echo -e " [${GRN}+${NC}] Enabling rules restoration at boot..."
+$IPTABLES_SAVE > /etc/iptables_rules.save
+echo "post-up /sbin/iptables-restore < /etc/iptables_rules.save" >> /etc/network/interfaces
